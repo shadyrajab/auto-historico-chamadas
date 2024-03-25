@@ -13,10 +13,11 @@ def add_chamada(token, consultor, telefone, quantidade, data):
         "consultor": consultor,
         "telefone": telefone,
         "quantidade": quantidade,
-        "data": data
+        "data": data,
     }
     response = requests.post(URL, headers=headers, json=params)
     print(response.status_code)
+
 
 def get_numero_ligacoes(driver, numero):
     linhas = []
@@ -65,8 +66,12 @@ def get_numero_ligacoes(driver, numero):
         By.XPATH,
         value="/html/body/app/ng-component/div/div[1]/div/div/div[2]/div/callhistoryreport/div/div/div[4]/div/div[2]",
     )
+    nenhum_registro = driver.find_element(
+        By.XPATH,
+        value="/html/body/app/ng-component/div/div[1]/div/div/div[2]/div/callhistoryreport/div/div/div[4]/div/div[2]/div/div/p",
+    )
 
-    if table:
+    if nenhum_registro.text != "Nenhum registro encontrado.":
         linhas = table.find_elements(
             By.CSS_SELECTOR, value=".row.scroll-report-row-body"
         )

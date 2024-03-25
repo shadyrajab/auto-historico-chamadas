@@ -3,13 +3,14 @@ import os
 import time
 from datetime import datetime
 
+import pandas as pd
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
-from utils import get_numero_ligacoes, add_chamada
+from utils import add_chamada, get_numero_ligacoes
 
 load_dotenv()
 
@@ -58,4 +59,8 @@ obj = []
 for nome, numero in EQUIPE_FLAVIO:
     qtd = get_numero_ligacoes(driver, numero)
 
-    add_chamada(TOKEN, nome, numero, qtd, str(now))
+    obj.append({"CONSULTOR": nome, "TELEFONE": numero, "CHAMADAS": qtd})
+
+df = pd.DataFrame(obj)
+
+df.to_excel(f"chamadas {str(now)}.xlsx")
