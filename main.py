@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
-from utils import get_numero_ligacoes
+from utils import get_numero_ligacoes, add_chamada
 
 load_dotenv()
 
@@ -17,8 +17,9 @@ URL = os.getenv("URL")
 USERNAME = os.getenv("USER")
 PASSWORD = os.getenv("PASSWORD")
 EQUIPE_FLAVIO = json.loads(os.getenv("EQUIPE_FLAVIO"))
+TOKEN = os.getenv("TOKEN")
 
-service = Service(executable_path="C:\Program Files (x86)\chromedriver.exe")
+service = Service(executable_path="chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 
 driver.get(URL)
@@ -51,13 +52,10 @@ select_box = Select(
 
 select_box.select_by_visible_text("Histórico de Chamadas")
 
-now = datetime.now().strftime("%d/%m/%Y")
+now = datetime.now().strftime("%d-%m-%Y")
 obj = []
 
 for nome, numero in EQUIPE_FLAVIO:
-    print(numero)
     qtd = get_numero_ligacoes(driver, numero)
 
-    obj.append(
-        {"CONSULTOR": nome, "CONTATO": numero, "LIGAÇÕES": qtd, "DATA": str(now)}
-    )
+    add_chamada(TOKEN, nome, numero, qtd, str(now))
