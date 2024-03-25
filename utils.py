@@ -1,8 +1,22 @@
 import time
 from datetime import datetime
 
+import requests
 from selenium.webdriver.common.by import By
 
+URL = "https://freecelapi-b44da8eb3c50.herokuapp.com/chamadas"
+
+
+def add_chamada(token, consultor, telefone, quantidade, data):
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {
+        "consultor": consultor,
+        "telefone": telefone,
+        "quantidade": quantidade,
+        "data": data
+    }
+    response = requests.post(URL, headers=headers, json=params)
+    print(response.status_code)
 
 def get_numero_ligacoes(driver, numero):
     linhas = []
@@ -53,6 +67,8 @@ def get_numero_ligacoes(driver, numero):
     )
 
     if table:
-        linhas = table.find_elements(By.CSS_SELECTOR, value=".row.scroll-report-row-body")
+        linhas = table.find_elements(
+            By.CSS_SELECTOR, value=".row.scroll-report-row-body"
+        )
 
     return len(linhas)
