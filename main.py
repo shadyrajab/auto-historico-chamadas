@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from datetime import datetime
@@ -8,11 +9,14 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
+from utils import get_numero_ligacoes
+
 load_dotenv()
 
 URL = os.getenv("URL")
 USERNAME = os.getenv("USER")
 PASSWORD = os.getenv("PASSWORD")
+EQUIPE_FLAVIO = json.loads(os.getenv("EQUIPE_FLAVIO"))
 
 service = Service(executable_path="C:\Program Files (x86)\chromedriver.exe")
 driver = webdriver.Chrome(service=service)
@@ -47,53 +51,13 @@ select_box = Select(
 
 select_box.select_by_visible_text("Histórico de Chamadas")
 
-
-search = driver.find_element(
-    By.XPATH,
-    value="/html/body/app/ng-component/div/div[1]/div/div/div[1]/div[2]/div[2]/div/input",
-)
-
-search.send_keys("61999273832")
-
-
 now = datetime.now().strftime("%d/%m/%Y")
+obj = []
 
-data_inicio = driver.find_element(
-    By.XPATH,
-    value="/html/body/app/ng-component/div/div[1]/div/div/div[1]/div[2]/div[3]/div/div/input",
-)
+for nome, numero in EQUIPE_FLAVIO:
+    print(numero)
+    qtd = get_numero_ligacoes(driver, numero)
 
-data_inicio_calendar_button = driver.find_element(
-    By.XPATH,
-    value="/html/body/app/ng-component/div/div[1]/div/div/div[1]/div[2]/div[3]/div/div/button",
-)
-
-data_fim = driver.find_element(
-    By.XPATH,
-    value="/html/body/app/ng-component/div/div[1]/div/div/div[1]/div[2]/div[4]/div/div/input",
-)
-
-data_fim_calendar_button = driver.find_element(
-    By.XPATH,
-    value="/html/body/app/ng-component/div/div[1]/div/div/div[1]/div[2]/div[4]/div/div/button",
-)
-
-
-data_inicio.send_keys(now)
-data_fim.send_keys(now)
-data_inicio_calendar_button.click()
-data_fim_calendar_button.click()
-
-
-consultar = driver.find_element(
-    By.XPATH,
-    value="/html/body/app/ng-component/div/div[1]/div/div/div[1]/div[2]/div[5]/div/button",
-)
-
-consultar.click()
-
-time.sleep(10)
-
-linhas = driver.find_elements(By.CSS_SELECTOR, value=".row.scroll-report-row-body")
-
-print(len(linhas))
+    obj.append(
+        {"CONSULTOR": nome, "CONTATO": numero, "LIGAÇÕES": qtd, "DATA": str(now)}
+    )
